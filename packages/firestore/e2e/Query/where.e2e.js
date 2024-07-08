@@ -96,18 +96,12 @@ describe('firestore().collection().where()', function () {
       firebase.firestore().collection(COLLECTION).where('foo.bar', '!=', null);
     });
 
-    it('throws if multiple inequalities on different paths is provided', function () {
-      try {
-        firebase
-          .firestore()
-          .collection(COLLECTION)
-          .where('foo.bar', '>', 123)
-          .where('bar', '>', 123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('All where filters with an inequality');
-        return Promise.resolve();
-      }
+    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
+      await firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo.bar', '>', 123)
+        .where('bar', '>', 123);
     });
 
     it('allows inequality on the same path', function () {
@@ -659,19 +653,14 @@ describe('firestore().collection().where()', function () {
       query(collection(getFirestore(), COLLECTION), where('foo.bar', '!=', null));
     });
 
-    it('throws if multiple inequalities on different paths is provided', function () {
+    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
       const { getFirestore, collection, query, where } = firestoreModular;
-      try {
-        query(
-          collection(getFirestore(), COLLECTION),
-          where('foo.bar', '>', 123),
-          where('bar', '>', 123),
-        );
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('All where filters with an inequality');
-        return Promise.resolve();
-      }
+
+      await query(
+        collection(getFirestore(), COLLECTION),
+        where('foo.bar', '>', 123),
+        where('bar', '>', 123),
+      );
     });
 
     it('allows inequality on the same path', function () {

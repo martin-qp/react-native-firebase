@@ -26,10 +26,7 @@ describe('firestore().collection().where(Filters)', function () {
 
   it('throws if fieldPath string is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('.foo.bar', '==', 1));
+      firebase.firestore().collection(COLLECTION).where(Filter('.foo.bar', '==', 1));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -40,10 +37,7 @@ describe('firestore().collection().where(Filters)', function () {
 
   it('throws if operator string is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('foo.bar', '!', 1));
+      firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', '!', 1));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -93,32 +87,19 @@ describe('firestore().collection().where(Filters)', function () {
   });
 
   it('allows null to be used with equal operator', function () {
-    firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where(Filter('foo.bar', '==', null));
+    firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', '==', null));
   });
 
   it('allows null to be used with not equal operator', function () {
-    firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where(Filter('foo.bar', '!=', null));
+    firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', '!=', null));
   });
 
-  it('throws if multiple inequalities on different paths is provided', function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('foo.bar', '>', 123))
-        .where(Filter('bar', '>', 123));
-
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('All where filters with an inequality');
-      return Promise.resolve();
-    }
+  it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
+    await firebase
+      .firestore()
+      .collection(COLLECTION)
+      .where(Filter('foo.bar', '>', 123))
+      .where(Filter('bar', '>', 123));
   });
 
   it('allows inequality on the same path', function () {
@@ -131,10 +112,7 @@ describe('firestore().collection().where(Filters)', function () {
 
   it('throws if in query with no array value', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('foo.bar', 'in', '123'));
+      firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', 'in', '123'));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -161,10 +139,7 @@ describe('firestore().collection().where(Filters)', function () {
     try {
       const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('foo.bar', 'in', queryArray));
+      firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', 'in', queryArray));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {

@@ -117,22 +117,15 @@ describe(' firestore().collection().where(AND Filters)', function () {
         .where(Filter.and(Filter('foo.bar', '==', null), Filter('foo.bar', '!=', null)));
     });
 
-    it('throws if multiple inequalities on different paths is provided', function () {
-      try {
-        firebase
-          .firestore()
-          .collection(COLLECTION)
-          .where(Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '>', 123)));
-
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('All where filters with an inequality');
-        return Promise.resolve();
-      }
+    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
+      await firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where(Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '>', 123)));
     });
 
-    it('allows inequality on the same path', function () {
-      firebase
+    it('allows inequality on the same path', async function () {
+      await firebase
         .firestore()
         .collection(COLLECTION)
         .where(
@@ -774,19 +767,13 @@ describe(' firestore().collection().where(AND Filters)', function () {
       );
     });
 
-    it('throws if multiple inequalities on different paths is provided', function () {
+    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
       const { getFirestore, collection, query, and, where } = firestoreModular;
-      try {
-        query(
-          collection(getFirestore(), COLLECTION),
-          and(where('foo.bar', '>', 123), where('bar', '>', 123)),
-        );
 
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql('All where filters with an inequality');
-        return Promise.resolve();
-      }
+      await query(
+        collection(getFirestore(), COLLECTION),
+        and(where('foo.bar', '>', 123), where('bar', '>', 123)),
+      );
     });
 
     it('allows inequality on the same path', function () {
