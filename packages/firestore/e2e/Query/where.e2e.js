@@ -529,38 +529,22 @@ describe('firestore().collection().where()', function () {
       }
     });
 
-    it("should throw error when combining '!=' operator with any other inequality operator on a different field", async function () {
-      const ref = firebase.firestore().collection(COLLECTION);
+    it("should allow query when combining '!=' operator with any other inequality operator on a different field", async function () {
+      const colRef = firebase
+        .firestore()
+        .collection(`${COLLECTION}/filter/inequality-combine-not-equal`);
+      const expected = { foo: { bar: 300 }, bar: 200 };
+      await Promise.all([
+        colRef.add({ foo: { bar: 1 }, bar: 1 }),
+        colRef.add(expected),
+        colRef.add(expected),
+      ]);
 
-      try {
-        ref.where('test', '!=', 1).where('differentField', '>', 1);
-        return Promise.reject(new Error('Did not throw an Error on >.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      try {
-        ref.where('test', '!=', 1).where('differentField', '<', 1);
-        return Promise.reject(new Error('Did not throw an Error on <.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      try {
-        ref.where('test', '!=', 1).where('differentField', '<=', 1);
-        return Promise.reject(new Error('Did not throw an Error <=.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      try {
-        ref.where('test', '!=', 1).where('differentField', '>=', 1);
-        return Promise.reject(new Error('Did not throw an Error >=.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      return Promise.resolve();
+      const snapshot = await colRef.where('foo.bar', '>', 123).where('bar', '!=', 123).get();
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
     });
 
     it('should handle where clause after sort by', async function () {
@@ -1141,39 +1125,29 @@ describe('firestore().collection().where()', function () {
       }
     });
 
-    it("should throw error when combining '!=' operator with any other inequality operator on a different field", async function () {
+    it("should allow query when combining '!=' operator with any other inequality operator on a different field", async function () {
       const { getFirestore, collection, query, where } = firestoreModular;
-      const ref = collection(getFirestore(), COLLECTION);
+      const colRef = collection(
+        getFirestore(),
+        `${COLLECTION}/filter/inequality-combine-not-equal`,
+      );
+      const expected = { foo: { bar: 300 }, bar: 200 };
+      await Promise.all([
+        colRef.add({ foo: { bar: 1 }, bar: 1 }),
+        colRef.add(expected),
+        colRef.add(expected),
+      ]);
 
-      try {
-        query(ref, where('test', '!=', 1), where('differentField', '>', 1));
-        return Promise.reject(new Error('Did not throw an Error on >.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
+      const snapshot = await query(
+        colRef,
+        where('foo.bar', '>', 123),
+        where('bar', '!=', 123),
+      ).get();
 
-      try {
-        query(ref, where('test', '!=', 1), where('differentField', '<', 1));
-        return Promise.reject(new Error('Did not throw an Error on <.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      try {
-        query(ref, where('test', '!=', 1), where('differentField', '<=', 1));
-        return Promise.reject(new Error('Did not throw an Error <=.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      try {
-        query(ref, where('test', '!=', 1), where('differentField', '>=', 1));
-        return Promise.reject(new Error('Did not throw an Error >=.'));
-      } catch (error) {
-        error.message.should.containEql('must be on the same field.');
-      }
-
-      return Promise.resolve();
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
     });
 
     it('should handle where clause after sort by', async function () {
