@@ -96,12 +96,27 @@ describe('firestore().collection().where()', function () {
       firebase.firestore().collection(COLLECTION).where('foo.bar', '!=', null);
     });
 
-    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
-      await firebase
+    it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
+      const colRef = firebase
+        .firestore()
+        .collection(`${COLLECTION}/filter/different-path-inequality`);
+      const expected = { foo: { bar: 300 }, bar: 200 };
+      await Promise.all([
+        colRef.add({ foo: { bar: 1 }, bar: 1 }),
+        colRef.add(expected),
+        colRef.add(expected),
+      ]);
+
+      const snapshot = await firebase
         .firestore()
         .collection(COLLECTION)
         .where('foo.bar', '>', 123)
         .where('bar', '>', 123);
+
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
     });
 
     it('allows inequality on the same path', function () {
@@ -653,14 +668,28 @@ describe('firestore().collection().where()', function () {
       query(collection(getFirestore(), COLLECTION), where('foo.bar', '!=', null));
     });
 
-    it('allows multiple inequalities (excluding `!=`) on different paths is provided', async function () {
+    it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
       const { getFirestore, collection, query, where } = firestoreModular;
 
-      await query(
+      const colRef = firebase
+        .firestore()
+        .collection(`${COLLECTION}/filter/different-path-inequality`);
+      const expected = { foo: { bar: 300 }, bar: 200 };
+      await Promise.all([
+        colRef.add({ foo: { bar: 1 }, bar: 1 }),
+        colRef.add(expected),
+        colRef.add(expected),
+      ]);
+
+      const snapshot = await query(
         collection(getFirestore(), COLLECTION),
         where('foo.bar', '>', 123),
         where('bar', '>', 123),
       );
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
     });
 
     it('allows inequality on the same path', function () {
