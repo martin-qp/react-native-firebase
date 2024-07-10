@@ -1134,11 +1134,7 @@ describe('firestore().collection().where()', function () {
         colRef.add(expected),
       ]);
 
-      const snapshot = await query(
-        colRef,
-        where('foo.bar', '>', 123),
-        where('bar', '!=', 123),
-      ).get();
+      const snapshot = await query(colRef, where('foo.bar', '>', 123), where('bar', '!=', 1)).get();
 
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
