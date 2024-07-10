@@ -649,7 +649,7 @@ describe('firestore().collection().where()', function () {
     });
 
     it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
-      const { getFirestore, collection, query, where } = firestoreModular;
+      const { query, where } = firestoreModular;
 
       const colRef = firebase
         .firestore()
@@ -662,10 +662,10 @@ describe('firestore().collection().where()', function () {
       ]);
 
       const snapshot = await query(
-        collection(getFirestore(), COLLECTION),
+        colRef,
         where('foo.bar', '>', 123),
         where('bar', '>', 123),
-      );
+      ).get();
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
         s.data().should.eql(jet.contextify(expected));
