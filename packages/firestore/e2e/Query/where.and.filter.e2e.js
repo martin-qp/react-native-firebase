@@ -769,10 +769,8 @@ describe(' firestore().collection().where(AND Filters)', function () {
 
     it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
       const { getFirestore, collection, query, and, where } = firestoreModular;
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/different-path-inequality`);
 
-      const colRef = firebase
-        .firestore()
-        .collection(`${COLLECTION}/filter/different-path-inequality`);
       const expected = { foo: { bar: 300 }, bar: 200 };
       await Promise.all([
         colRef.add({ foo: { bar: 1 }, bar: 1 }),
@@ -781,9 +779,9 @@ describe(' firestore().collection().where(AND Filters)', function () {
       ]);
 
       const snapshot = await query(
-        collection(getFirestore(), COLLECTION),
+        colRef,
         and(where('foo.bar', '>', 123), where('bar', '>', 123)),
-      );
+      ).get();
 
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
