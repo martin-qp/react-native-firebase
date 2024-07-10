@@ -1524,8 +1524,8 @@ describe('firestore().collection().where(OR Filters)', function () {
       const snapshot = await query(
         colRef,
         or(
-          and(where('foo.bar', '!=', 1), where('differentField', '>', 2)),
-          and(where('foo.bar', '!=', 1), where('differentField', '>', 2)),
+          and(where('foo.bar', '>', 123), where('bar', '>', 123)),
+          and(where('foo.bar', '!=', 1), where('bar', '<', 2)),
         ),
       ).get();
 
