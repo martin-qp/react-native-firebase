@@ -117,11 +117,10 @@ describe('firestore().collection().where(Filters)', function () {
       colRef.add(expected),
     ]);
 
-    const snapshot = await firebase
-      .firestore()
-      .collection(COLLECTION)
+    const snapshot = await colRef
       .where(Filter('foo.bar', '>', 123))
-      .where(Filter('bar', '>', 123));
+      .where(Filter('bar', '>', 123))
+      .get();
 
     snapshot.size.should.eql(2);
     snapshot.forEach(s => {
