@@ -198,15 +198,14 @@ describe('firestore().collection().where(OR Filters)', function () {
         colRef.add(expected),
         colRef.add(expected),
       ]);
-      const snapshot = await firebase
-        .firestore()
-        .collection(COLLECTION)
+      const snapshot = await colRef
         .where(
           Filter.or(
             Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '>', 123)),
             Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '>', 123)),
           ),
-        );
+        )
+        .get();
 
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
