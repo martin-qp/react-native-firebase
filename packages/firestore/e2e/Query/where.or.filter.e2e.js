@@ -1228,7 +1228,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
-      const { getFirestore, collection, where, or, and, query } = firestoreModular;
+      const { where, or, and, query } = firestoreModular;
 
       const colRef = firebase
         .firestore()
@@ -1241,12 +1241,12 @@ describe('firestore().collection().where(OR Filters)', function () {
       ]);
 
       const snapshot = await query(
-        collection(getFirestore(), COLLECTION),
+        colRef,
         or(
           and(where('foo.bar', '>', 123), where('bar', '>', 123)),
-          and(where('foo.bar', '>', 123), where('bar', '>', 123)),
+          and(where('foo.bar', '>', 123), where('bar', '!=', 1)),
         ),
-      );
+      ).get();
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
         s.data().should.eql(jet.contextify(expected));
