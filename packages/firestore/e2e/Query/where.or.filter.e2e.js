@@ -483,11 +483,10 @@ describe('firestore().collection().where(OR Filters)', function () {
         colRef.add(expected),
         colRef.add(expected),
       ]);
-
       const snapshot = await colRef
         .where(
           Filter.or(
-            Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '!=', 123)),
+            Filter.and(Filter('foo.bar', '>', 123), Filter('bar', '>', 123)),
             Filter.and(Filter('foo.bar', '!=', 1), Filter('bar', '>', 2)),
           ),
         )
